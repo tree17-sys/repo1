@@ -1,0 +1,43 @@
+sequenceDiagram
+    actor user as User
+    participant lims as LIMS
+    participant acq as Agilent ACQ
+    participant det as Agilent DET
+    participant cds as Agilent CDS
+
+    Note over user,lims: Prerequisite: The user is logged in LIMS
+    user->>lims: Create a Test batch
+    lims->>user:  A Test batch is created
+
+    Note over user,acq: The user must be logged in CDS to create a sequence
+    user->>lims: Login CDS
+    lims->>acq: /api/v1/olss/login {UserCode, UserPWD}
+    alt Login failed
+        acq->>lims: 4xx
+        lims->>user: MsgBox(error)
+    else Login successful
+        acq->>lims: 200 {Ticket}
+        lims->>user: MsgBox("Logged in CDS")
+    end
+    
+    Note over user,acq: The user initiates creating a sequence
+    user->>lims: Send the Test batch to CDS
+    lims->>acq: /api/v1/instrument/connect {Ticket, InstrumentId, ProjectId}
+    alt Instrument not connected
+        acq->>lims: 4xx
+        lims->>user: MsgBox(error)
+    else Instrument connected
+        acq->>lims: 200
+        lims->>acq: /api/v1/sequence/save <br>{Ticket, InstrumentId, ProjectId, SequenceType, <br>SequenceFilePath, AuditTrailReason, SequenceInjections}
+        acq->>lims: 200
+    end
+
+    Note over user,cds: Prerequisite: Data such as result, vial, etc has been entered in CDS
+    user->>cds: Print injections
+
+    Note over user,det: The user initiates getting test results from DET
+    user->>lims: Get results of Test batch
+    loop Each test in the Test batch
+        lims->>det: /api/results <br>{querydata:[{FieldCode: LimsId1, FieldValue: LIMS Test Number, IsLike: 0}]}
+        det->>lims: 200 Should return just 1 row for each LIMS Test Number (LimsId1)
+    end
