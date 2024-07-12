@@ -1,0 +1,34 @@
+[
+    {
+        "Id": 3,
+        "Name": "Projects",
+        "Description": "Root of projects tree",
+        "ParentId": 0,
+        "Path": null,
+        "Type": 0
+    }, 
+    {
+        "Id": 33,
+        "Name": "2023",
+        "Description": null,
+        "ParentId": 3,
+        "Path": null,
+        "Type": 0
+    }, 
+    {
+        "Id": 34,
+        "Name": "Q3",
+        "Description": null,
+        "ParentId": 33,
+        "Path": null,
+        "Type": 0
+    }, 
+    {
+        "Id": 35,
+        "Name": "P1101",
+        "Description": null,
+        "ParentId": 34,
+        "Path": "/2023/Q3/P1101",
+        "Type": 1
+    }
+]
